@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>OpenRoad</title>
+<script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Space+Mono:wght@700&display=swap');
+
+:root {
+  --bg: #080c10;
+  --surface: #0f1419;
+  --surface2: #161d24;
+  --accent: #4ade80;
+  --accent-dim: rgba(74,222,128,0.12);
+  --cyan: #22d3ee;
+  --text: #eef2f7;
+  --muted: #5a6778;
+  --border: rgba(255,255,255,0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.glow-top {
+  position: fixed;
+  top: -140px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 420px;
+  background: radial-gradient(ellipse at center, rgba(74,222,128,0.09) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-bottom {
+  position: fixed;
+  bottom: -100px;
+  right: -80px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(ellipse at center, rgba(34,211,238,0.06) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+header {
+  position: relative;
+  z-index: 1;
+  padding: 3rem 2rem 1.5rem;
+  text-align: center;
+}
+
+.logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.logo-icon {
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 28px rgba(74,222,128,0.28);
+  flex-shrink: 0;
+}
+.logo-icon svg { width: 26px; height: 26px; }
+
+.logo-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #fff 30%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  font-size: 0.78rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+main {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 1.25rem 2rem;
+  gap: 1rem;
+}
+
+/* STATUS */
+.status-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 1.1rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex-shrink: 0;
+  transition: background 0.4s, box-shadow 0.4s;
+}
+.status-dot.ready { background: #fbbf24; box-shadow: 0 0 7px #fbbf24; animation: blink 1.6s infinite; }
+.status-dot.connected { background: var(--accent); box-shadow: 0 0 9px var(--accent); animation: blink 2.8s infinite; }
+.status-dot.error { background: #f87171; box-shadow: 0 0 7px #f87171; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.status-info { flex: 1; min-width: 0; }
+.status-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.09em; }
+.status-value { font-size: 0.9rem; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.1rem; }
+
+/* CAST BUTTONS */
+.cast-section {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cast-btn {
+  width: 100%;
+  padding: 1.05rem;
+  background: linear-gradient(135deg, var(--accent) 0%, #15803d 100%);
+  color: #040b06;
+  border: none;
+  border-radius: 15px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+  box-shadow: 0 4px 22px rgba(74,222,128,0.22);
+  -webkit-appearance: none;
+  letter-spacing: -0.01em;
+}
+.cast-btn:active { transform: scale(0.97); }
+.cast-btn:disabled { opacity: 0.38; cursor: not-allowed; transform: none; }
+.cast-btn svg { width: 19px; height: 19px; flex-shrink: 0; }
+
+.disconnect-btn {
+  width: 100%;
+  padding: 0.95rem;
+  background: transparent;
+  color: #f87171;
+  border: 1px solid rgba(248,113,113,0.22);
+  border-radius: 15px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 0.2s;
+  display: none;
+}
+.disconnect-btn:active { background: rgba(248,113,113,0.08); }
+.disconnect-btn.visible { display: flex; }
+
+/* FEATURES */
+.features-grid {
+  width: 100%;
+  max-width: 380px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.feature-chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.chip-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.feature-chip span { font-size: 0.8rem; font-weight: 500; color: var(--text); line-height: 1.2; }
+
+.fc-maps .chip-icon   { background: rgba(34,211,238,0.1); }
+.fc-spotify .chip-icon{ background: rgba(74,222,128,0.1); }
+.fc-browser .chip-icon{ background: rgba(167,139,250,0.1); }
+.fc-phone .chip-icon  { background: rgba(251,191,36,0.1); }
+.fc-yt .chip-icon     { background: rgba(248,113,113,0.1); }
+.fc-weather .chip-icon{ background: rgba(96,165,250,0.1); }
+
+/* INSTRUCTIONS */
+.instructions {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 1.2rem 1.4rem;
+}
+.instructions h3 {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 0.8rem;
+}
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-bottom: 0.6rem;
+}
+.step:last-child { margin-bottom: 0; }
+.step-num {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  border: 1px solid rgba(74,222,128,0.18);
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+.step p strong { color: var(--text); font-weight: 500; }
+
+footer {
+  position: relative;
+  z-index: 1;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+</style>
+</head>
+<body>
+
+<div class="glow-top"></div>
+<div class="glow-bottom"></div>
+
+<header>
+  <div class="logo-wrap">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#040b06" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 17l2-8 4 3 3-7 3 7 4-3 2 8"/>
+        <circle cx="12" cy="19" r="2"/>
+      </svg>
+    </div>
+    <span class="logo-text">OpenRoad</span>
+  </div>
+  <p class="tagline">In-car experience · Cast to start</p>
+</header>
+
+<main>
+
+  <div class="status-card">
+    <div class="status-dot" id="statusDot"></div>
+    <div class="status-info">
+      <div class="status-label">Cast Status</div>
+      <div class="status-value" id="statusValue">Initializing…</div>
+    </div>
+  </div>
+
+  <div class="cast-section">
+    <button class="cast-btn" id="castBtn" disabled>
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M1 18v3h3a3 3 0 0 0-3-3zm0-4v2a7 7 0 0 1 7 7h2a9 9 0 0 0-9-9zm0-4v2a13 13 0 0 1 13 13h2A15 15 0 0 0 1 10zm20-6H3C1.9 4 1 4.9 1 6v3h2V6h18v12h-7v2h7c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/>
+      </svg>
+      Cast to Car Display
+    </button>
+    <button class="disconnect-btn" id="disconnectBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      Stop Casting
+    </button>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-chip fc-maps">
+      <div class="chip-icon">🗺️</div><span>Maps &amp; Navigation</span>
+    </div>
+    <div class="feature-chip fc-spotify">
+      <div class="chip-icon">🎵</div><span>Spotify</span>
+    </div>
+    <div class="feature-chip fc-browser">
+      <div class="chip-icon">🌐</div><span>Browser</span>
+    </div>
+    <div class="feature-chip fc-phone">
+      <div class="chip-icon">📞</div><span>Phone &amp; Contacts</span>
+    </div>
+    <div class="feature-chip fc-yt">
+      <div class="chip-icon">▶️</div><span>YouTube &amp; Media</span>
+    </div>
+    <div class="feature-chip fc-weather">
+      <div class="chip-icon">⛅</div><span>Weather</span>
+    </div>
+  </div>
+
+  <div class="instructions">
+    <h3>How to connect</h3>
+    <div class="step">
+      <div class="step-num">1</div>
+      <p>Make sure your phone and the <strong>Cast-compatible display</strong> (Chromecast, etc.) are on the same Wi-Fi network.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <p>Tap <strong>"Cast to Car Display"</strong> and select your device from the list.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <p>OpenRoad loads on the car screen. <strong>Your phone can go to sleep</strong> — the session keeps running.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <p>Use the <strong>car's touchscreen</strong> to interact. Return here only to disconnect.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>OpenRoad · Google Cast App ID: 2A0E8A42</footer>
+
+<script>
+const APP_ID = '2A0E8A42';
+const castBtn = document.getElementById('castBtn');
+const disconnectBtn = document.getElementById('disconnectBtn');
+const statusDot = document.getElementById('statusDot');
+const statusValue = document.getElementById('statusValue');
+
+function setStatus(state, text) {
+  statusDot.className = 'status-dot ' + (state || '');
+  statusValue.textContent = text;
+}
+
+window['__onGCastApiAvailable'] = function(isAvailable) {
+  if (!isAvailable) {
+    setStatus('error', 'Cast API unavailable — use Chrome');
+    return;
+  }
+
+  const context = cast.framework.CastContext.getInstance();
+  context.setOptions({
+    receiverApplicationId: APP_ID,
+    autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED,
+    resumeSavedSession: true
+  });
+
+  castBtn.disabled = false;
+  setStatus('ready', 'Ready to cast');
+
+  context.addEventListener(
+    cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+    function(e) {
+      const s = e.sessionState;
+      const SS = cast.framework.SessionState;
+      if (s === SS.SESSION_STARTED || s === SS.SESSION_RESUMED) {
+        const dev = context.getCurrentSession().getCastDevice().friendlyName;
+        setStatus('connected', 'Connected → ' + dev);
+        castBtn.style.display = 'none';
+        disconnectBtn.classList.add('visible');
+      } else if (s === SS.SESSION_ENDING || s === SS.SESSION_ENDED) {
+        setStatus('ready', 'Ready to cast');
+        castBtn.style.display = 'flex';
+        disconnectBtn.classList.remove('visible');
+      } else if (s === SS.SESSION_START_FAILED) {
+        setStatus('error', 'Connection failed — try again');
+        castBtn.style.display = 'flex';
+        disconnectBtn.classList.remove('visible');
+      }
+    }
+  );
+};
+
+castBtn.addEventListener('click', async () => {
+  const context = cast.framework.CastContext.getInstance();
+  try {
+    await context.requestSession();
+  } catch(e) {
+    if (e !== chrome.cast.ErrorCode.CANCEL) {
+      setStatus('error', 'Could not connect');
+    }
+  }
+});
+
+disconnectBtn.addEventListener('click', () => {
+  const session = cast.framework.CastContext.getInstance().getCurrentSession();
+  if (session) session.endSession(true);
+});
+</script>
+</body>
+</html>
