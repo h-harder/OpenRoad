@@ -18,11 +18,11 @@ A CarPlay-like in-car experience delivered via Google Cast. Your phone casts to 
 1. Create a new GitHub repo (e.g. `openroad`)
 2. Drop both files in the root
 3. Go to **Settings → Pages → Source → main branch → / (root)** → Save
-4. Your site will be at: `https://YOUR_USERNAME.github.io/openroad/`
+4. Your site will be at: `https://h-harder.github.io/openroad/`
 
 The receiver URL you need to register is:
 ```
-https://YOUR_USERNAME.github.io/openroad/receiver.html
+https://h-harder.github.io/openroad/receiver.html
 ```
 
 ---
